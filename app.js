@@ -1,4 +1,4 @@
-var colourPalette = ['black', 'blue', 'brown', 'green', 'gray', 'yellow', 'pink', 'orange', 'red', 'purple', 'white'];
+var colourPalette = ['black', 'blue', 'brown', 'green', 'gray', 'yellow', 'pink', 'orange', 'red', 'purple', 'white', 'teal', 'turquoise'];
 
 function randomColourGenerator() {
   var randomArrayIndex = Math.floor(Math.random() * colourPalette.length);
@@ -8,7 +8,7 @@ function randomColourGenerator() {
 function renderGrid(dimensions) {
   var gridContainer = document.getElementById('grid-container');
   gridContainer.innerHTML = '';
-  
+
   for (var i = 0; i < dimensions * dimensions; i++) {
     var squareDiv = document.createElement('div');
     squareDiv.classList.add('grid-unit');
@@ -17,17 +17,29 @@ function renderGrid(dimensions) {
 
   gridContainer.style.gridTemplateColumns = `repeat(${dimensions}, 1fr)`;
   gridContainer.style.gridTemplateRows = `repeat(${dimensions}, 1fr)`;
+}
 
+function setupEventListeners() {
+  var gridContainer = document.getElementById('grid-container');
   gridContainer.addEventListener('mouseover', function(event) {
     event.target.style.background = randomColourGenerator();
   });
+
+  var resetButton = document.getElementById('reset-button');
+  resetButton.addEventListener('click', function() {
+    var gridUnits = Array.from(document.querySelectorAll('.grid-unit'));
+    gridUnits.forEach(function(gridUnit) {
+      gridUnit.style.background = 'white';
+    });
+  });
 }
 
+function initialise() {
+  setupEventListeners();
+  renderGrid(16);
+}
 
-
-
-
-renderGrid(16);
+initialise();
 
 
 
