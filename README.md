@@ -19,6 +19,8 @@ gridContainer.style.gridTemplateAreas = gridTemplateAreaArray.join(' ');
 
 I got it working by roughly copying the code but I wanted to understand what was going on behind the two array methods. I researched the two methods + template literals + backtick characters further and was able to replicate the result of those two methods without using them! I'm not sure if I've done it in the best way possible but I'm happy that I was able to do so at all.
 
+2. Turns out grid-template-areas wasn't needed. I'll try and find a use for that work- probably having different sized squares/rectangles on the grid?
+
 A few questions/topics to revisit:
 
 1. My alternative to using .map() and .join().
