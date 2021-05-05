@@ -27,11 +27,11 @@ function setupButtonsAndEventListeners() {
 
   var changeGridSizeButton = document.getElementById('change-grid-size-button');
   changeGridSizeButton.addEventListener('click', function() {
-    var dimensions = window.prompt('Changing grid size will reset the grid.\nEnter a number between 10 and 100: ');
-    if (dimensions >= 10 && dimensions <= 100) {
+    var dimensions = window.prompt('Changing grid size will reset the grid.\nEnter a number between 10 and 30: ');
+    if (dimensions >= 10 && dimensions <= 30) {
       renderGrid(Math.round(dimensions));
-    } else if (dimensions != null || dimensions < 10 || dimensions > 100) {
-      window.prompt('You must enter a number between 10 and 100: ');
+    } else if (dimensions != null || dimensions < 10 || dimensions > 30) {
+      window.prompt('You must enter a number between 10 and 30: ');
     }
   });
 
@@ -39,7 +39,7 @@ function setupButtonsAndEventListeners() {
   resetButton.addEventListener('click', function() {
     var gridUnits = Array.from(document.querySelectorAll('.grid-unit'));
     gridUnits.forEach(function(gridUnit) {
-      gridUnit.style.background = 'white';
+      gridUnit.style.background = 'rgb(250, 194, 194)';
     });
   });
 }
