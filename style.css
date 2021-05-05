@@ -17,6 +17,21 @@ header {
   border: "1px solid black";
 }
 
+#control-panel {
+  display: grid;
+  margin-bottom: 1rem;
+}
+
+#change-grid-size-button {
+  width: 500px;
+  margin: auto;
+}
+
+#reset-button {
+  width: 500px;
+  margin: auto;
+}
+
 .grid-unit {
   border: thin solid black;
 }
