@@ -19,10 +19,20 @@ function renderGrid(dimensions) {
   gridContainer.style.gridTemplateRows = `repeat(${dimensions}, 1fr)`;
 }
 
-function setupEventListeners() {
+function setupButtonsAndEventListeners() {
   var gridContainer = document.getElementById('grid-container');
   gridContainer.addEventListener('mouseover', function(event) {
     event.target.style.background = randomColourGenerator();
+  });
+
+  var changeGridSizeButton = document.getElementById('change-grid-size-button');
+  changeGridSizeButton.addEventListener('click', function() {
+    var dimensions = window.prompt('Changing grid size will reset the grid.\nEnter a number between 10 and 100: ');
+    if (dimensions >= 10 && dimensions <= 100) {
+      renderGrid(Math.round(dimensions));
+    } else if (dimensions != null && (dimensions < 10 || dimensions > 100)) {
+      window.prompt('Enter a number between 10 and 100: ');
+    }
   });
 
   var resetButton = document.getElementById('reset-button');
@@ -35,7 +45,7 @@ function setupEventListeners() {
 }
 
 function initialise() {
-  setupEventListeners();
+  setupButtonsAndEventListeners();
   renderGrid(16);
 }
 
