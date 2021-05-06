@@ -22,7 +22,9 @@ function renderGrid(dimensions) {
 function setupButtonsAndEventListeners() {
   var gridContainer = document.getElementById('grid-container');
   gridContainer.addEventListener('mouseover', function(event) {
-    event.target.style.background = randomColourGenerator();
+    if (event.target.className === 'grid-unit') {
+      event.target.style.background = randomColourGenerator();
+    }
   });
 
   var changeGridSizeButton = document.getElementById('change-grid-size-button');
@@ -64,27 +66,28 @@ initialise();
 
 
 
-// code for grid-template-areas for later:
-  // // create an array with the values to be joined
-  // var gridTemplateAreasArray = [];
-  // var gridTemplateAreasString = '';
-  // // for loop to create each row/string for grid-template-areas value
-  // for (var i = 0; i < dimensions; i++) {
-  //   var gridTemplateAreasArrayItem = '';
-  //   // for loop to populate the length of each row/string according to dimensions input by user
-  //   for (var j = 0; j < dimensions; j++) {
-  //       gridTemplateAreasArrayItem += 'grid-unit ';
-  //   }
-  //   gridTemplateAreasArray.push(gridTemplateAreasArrayItem);
-  // }
-  // // wrap each value from the array above in "" (quotes) and join with a space in between each and wrap the final value in `` (backtick characters)
-  // var gridTemplateAreasStringGenerator = function() {
-  //   for (var i = 0; i < gridTemplateAreasArray.length; i++) {
-  //     gridTemplateAreasString += `"${gridTemplateAreasArray[i]}" `;
-  //   }
-  //   gridTemplateAreasString = gridTemplateAreasString.trim();
-  //   gridContainer.style.gridTemplateAreas = gridTemplateAreasString;
-  // }();
-  // // the code block directly above replaces the need to use .map() and .join():
-  // // gridTemplateAreasArray = gridTemplateAreasArray.map(i => `"${i}"`);
-  // // gridContainer.style.gridTemplateAreas = gridTemplateAreasArray.join(' ');
+// // code for grid-template-areas for later:
+//   // create an array with the values to be joined
+//   var gridTemplateAreasArray = [];
+//   var gridTemplateAreasString = '';
+//   // var pattern = 'squaresAndRectangles';
+//   // for loop to create each row/string for grid-template-areas value
+//   for (var i = 0; i < dimensions; i++) {
+//     var gridTemplateAreasArrayItem = '';
+//     // for loop to populate the length of each row/string according to dimensions input by user
+//     for (var j = 0; j < dimensions; j++) {
+//         gridTemplateAreasArrayItem += 'grid-unit ';
+//     }
+//     gridTemplateAreasArray.push(gridTemplateAreasArrayItem);
+//   }
+//   // wrap each value from the array above in "" (quotes) and join with a space in between each and wrap the final value in `` (backtick characters)
+//   var gridTemplateAreasStringGenerator = function() {
+//     for (var i = 0; i < gridTemplateAreasArray.length; i++) {
+//       gridTemplateAreasString += `"${gridTemplateAreasArray[i]}" `;
+//     }
+//     gridTemplateAreasString = gridTemplateAreasString.trim();
+//     gridContainer.style.gridTemplateAreas = gridTemplateAreasString;
+//   }();
+//   // the code block directly above replaces the need to use .map() and .join():
+//   // gridTemplateAreasArray = gridTemplateAreasArray.map(i => `"${i}"`);
+//   // gridContainer.style.gridTemplateAreas = gridTemplateAreasArray.join(' ');
