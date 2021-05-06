@@ -30,7 +30,9 @@ function setupButtonsAndEventListeners() {
     var dimensions = window.prompt('Changing grid size will reset the grid.\nEnter a number between 10 and 30: ');
     if (dimensions >= 10 && dimensions <= 30) {
       renderGrid(Math.round(dimensions));
-    } else if (dimensions != null || dimensions < 10 || dimensions > 30) {
+    } else if (dimensions === null) {
+      return;
+    } else {
       window.prompt('You must enter a number between 10 and 30: ');
     }
   });
