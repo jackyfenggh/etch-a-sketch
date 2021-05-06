@@ -3,16 +3,11 @@
   font-family: Arial, Helvetica, sans-serif;
 }
 
-header {
-  display: inline;
-  width: 100%;
-  font-size: 2rem;
-}
-
 #title {
-  display: block;
+  display: inline-block;
+  width: 100%;
+  font-size: 3rem;
   text-align: center;
-  margin: 1rem;
 }
 
 #grid-container {
@@ -31,13 +26,15 @@ header {
 .button {
   width: 500px;
   margin: auto;
+  margin-top: 1px;
+  margin-bottom: 1px;
   background-color: rgb(250, 194, 194);
   outline: none;
   font-family: Arial, Helvetica, sans-serif;
-
 }
 
 .grid-unit {
   border: thin solid black;
   background-color: rgb(250, 194, 194);
+  margin: 1px;
 }
