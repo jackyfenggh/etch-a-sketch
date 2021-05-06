@@ -1,22 +1,67 @@
-var colourPalette = ['black', 'blue', 'brown', 'green', 'gray', 'yellow', 'pink', 'orange', 'red', 'purple', 'white', 'teal', 'turquoise'];
-
 function randomColourGenerator() {
+  var colourPalette = ['black', 'blue', 'brown', 'green', 'gray', 'yellow', 'orange', 'red', 'purple', 'white', 'turquoise'];
   var randomArrayIndex = Math.floor(Math.random() * colourPalette.length);
   return colourPalette[randomArrayIndex];
 }
 
-function renderGrid(dimensions) {
+function renderGrid(pattern) {
+  var numberOfGridUnits = 0;
+  var bigSquares = 0;
+  var gridTemplateAreaString = '';
+
+
+  if (pattern === 'defaultPattern') {
+    numberOfGridUnits = 100;
+  }
+
+  if (pattern === 'smallSquareBigSquarePattern') {
+    numberOfGridUnits = 73;
+    bigSquares = 9;
+    gridTemplateAreaString =
+      `". . . . . . . . . ."
+      ". grid-unit1 grid-unit1 . grid-unit2 grid-unit2 . grid-unit3 grid-unit3 ."
+      ". grid-unit1 grid-unit1 . grid-unit2 grid-unit2 . grid-unit3 grid-unit3 ."
+      ". . . . . . . . . ."
+      ". grid-unit4 grid-unit4 . grid-unit5 grid-unit5 . grid-unit6 grid-unit6 ."
+      ". grid-unit4 grid-unit4 . grid-unit5 grid-unit5 . grid-unit6 grid-unit6 ."
+      ". . . . . . . . . ."
+      ". grid-unit7 grid-unit7 . grid-unit8 grid-unit8 . grid-unit9 grid-unit9 ."
+      ". grid-unit7 grid-unit7 . grid-unit8 grid-unit8 . grid-unit9 grid-unit9 ."
+      ". . . . . . . . . ."`;
+  }
+
+  if (pattern === 'bigSquareSmallSquarePattern') {
+    numberOfGridUnits = 73;
+    bigSquares = 9;
+    gridTemplateAreaString =
+    "grid-unit1 grid-unit1 . . grid-unit2 grid-unit2 . . grid-unit3 grid-unit3"
+    "grid-unit1 grid-unit1 . . grid-unit2 grid-unit2 . . grid-unit3 grid-unit3"
+    ". . . . . . . . . ."
+    "grid-unit4 grid-unit4 . . grid-unit5 grid-unit5 . . grid-unit6 grid-unit6"
+    "grid-unit4 grid-unit4 . . grid-unit5 grid-unit5 . . grid-unit6 grid-unit6"
+    ". . . . . . . . . ."
+    "grid-unit7 grid-unit7 . . grid-unit8 grid-unit8 . . grid-unit9 grid-unit9"
+    "grid-unit7 grid-unit7 . . grid-unit8 grid-unit8 . . grid-unit9 grid-unit9"
+  }
+  
   var gridContainer = document.getElementById('grid-container');
   gridContainer.innerHTML = '';
 
-  for (var i = 0; i < dimensions * dimensions; i++) {
-    var squareDiv = document.createElement('div');
-    squareDiv.classList.add('grid-unit');
-    gridContainer.appendChild(squareDiv);
+  for (var i = 0; i < numberOfGridUnits; i++) {
+    var gridUnit = document.createElement('div');
+    gridUnit.classList.add('grid-unit');
+    gridUnit.setAttribute('id', 'grid-unit' + i);
+    gridContainer.appendChild(gridUnit);
+
+    if (i + 1 <= bigSquares) {
+      gridUnit.style.gridArea = 'grid-unit' + (i + 1);
+    }
   }
 
-  gridContainer.style.gridTemplateColumns = `repeat(${dimensions}, 1fr)`;
-  gridContainer.style.gridTemplateRows = `repeat(${dimensions}, 1fr)`;
+  gridContainer.style.gridTemplateColumns = `repeat(10, 1fr)`;
+  gridContainer.style.gridTemplateRows = `repeat(10, 1fr)`;
+  gridContainer.style.gridTemplateAreas = gridTemplateAreaString;
+
 }
 
 function setupButtonsAndEventListeners() {
@@ -50,7 +95,7 @@ function setupButtonsAndEventListeners() {
 
 function initialise() {
   setupButtonsAndEventListeners();
-  renderGrid(16);
+  renderGrid('defaultPattern');
 }
 
 initialise();
@@ -91,3 +136,14 @@ initialise();
 //   // the code block directly above replaces the need to use .map() and .join():
 //   // gridTemplateAreasArray = gridTemplateAreasArray.map(i => `"${i}"`);
 //   // gridContainer.style.gridTemplateAreas = gridTemplateAreasArray.join(' ');
+
+  // `"'. . . . . . . . . .'"`,
+  // `"'. bigSquare1 bigSquare1 . bigSquare2 bigSquare2 . bigSquare3 bigSquare3 .'"`,
+  // `"'. bigSquare1 bigSquare1 . bigSquare2 bigSquare2 . bigSquare3 bigSquare3 .'"`,
+  // `"'. . . . . . . . . .'"`,
+  // `"'. bigSquare4 bigSquare4 . bigSquare5 bigSquare5 . bigSquare6 bigSquare6 .'"`,
+  // `"'. bigSquare4 bigSquare4 . bigSquare5 bigSquare5 . bigSquare6 bigSquare6 .'"`,
+  // `"'. . . . . . . . . .'"`,
+  // `"'. bigSquare7 bigSquare7 . bigSquare8 bigSquare8 . bigSquare9 bigSquare9 .'"`,
+  // `"'. bigSquare7 bigSquare7 . bigSquare8 bigSquare8 . bigSquare9 bigSquare9 .'"`,
+  // `"'. . . . . . . . . .'"`
