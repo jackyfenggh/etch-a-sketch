@@ -4,99 +4,6 @@ function randomColourGenerator() {
   return colourPalette[randomArrayIndex];
 }
 
-// function renderGrid(pattern) {
-//   var numberOfGridUnits = 0;
-//   var bigSquares = 0;
-//   var gridTemplateAreaString = '';
-
-
-//   if (pattern === 'defaultPattern') {
-//     numberOfGridUnits = 100;
-//   }
-
-//   if (pattern === 'smallSquareBigSquarePattern') {
-//     numberOfGridUnits = 73;
-//     bigSquares = 9;
-//     gridTemplateAreaString =
-//       `". . . . . . . . . ."
-//       ". grid-unit1 grid-unit1 . grid-unit2 grid-unit2 . grid-unit3 grid-unit3 ."
-//       ". grid-unit1 grid-unit1 . grid-unit2 grid-unit2 . grid-unit3 grid-unit3 ."
-//       ". . . . . . . . . ."
-//       ". grid-unit4 grid-unit4 . grid-unit5 grid-unit5 . grid-unit6 grid-unit6 ."
-//       ". grid-unit4 grid-unit4 . grid-unit5 grid-unit5 . grid-unit6 grid-unit6 ."
-//       ". . . . . . . . . ."
-//       ". grid-unit7 grid-unit7 . grid-unit8 grid-unit8 . grid-unit9 grid-unit9 ."
-//       ". grid-unit7 grid-unit7 . grid-unit8 grid-unit8 . grid-unit9 grid-unit9 ."
-//       ". . . . . . . . . ."`;
-//   }
-
-//   if (pattern === 'funkyPattern') {
-//     numberOfGridUnits = 76;
-//     bigSquares = 14;
-//     gridTemplateAreaString =
-//       `"grid-unit1 grid-unit1 . . grid-unit14 . . grid-unit2 grid-unit2 grid-unit2"
-//       ". . . . grid-unit14 . grid-unit4 . . ."
-//       ". grid-unit3 grid-unit3 . . . grid-unit4 . . grid-unit8"
-//       "grid-unit5 . grid-unit6 grid-unit6 . . . . . grid-unit8"
-//       "grid-unit5 . . . . . grid-unit7 grid-unit7 . grid-unit8"
-//       "grid-unit5 . grid-unit9 grid-unit9 . . . . . grid-unit8"
-//       ". . grid-unit9 grid-unit9 . grid-unit12 grid-unit12 . . grid-unit8"
-//       ". . . . . grid-unit12 grid-unit12 . . ."
-//       ". grid-unit10 . . . . . . grid-unit13 ."
-//       ". grid-unit10 . grid-unit11 grid-unit11 grid-unit11 . . grid-unit13 ."`;
-//   }
-
-//   if (pattern === 'testPattern') {
-//     numberOfGridUnits = 30;
-//     bigSquares = 1;
-//     gridTemplateAreaString =
-//       `"grid-unit1 grid-unit1 ."
-//       "grid-unit1 grid-unit1 ."
-//       ". . ."`;
-//   }
-
-//   // ******
-//   // BELOW CODE SHOWS THAT YOU CAN HAVE MULTIPLE DIVS NEXT TO EACH OTHER WITH SAME gridArea will join it all up.
-//   var gridContainer = document.getElementById('grid-container');
-//   gridContainer.innerHTML = '';
-
-//   for (var i = 0; i < 9; i++) {
-//     var gridUnit = document.createElement('div');
-//     gridUnit.classList.add('grid-unit');
-//     gridUnit.setAttribute('id', 'grid-unit' + i);
-//     gridContainer.appendChild(gridUnit);
-//   }
-
-//   gridContainer.childNodes[0].style.gridArea = 'grid-unit1';
-//   // gridContainer.childNodes[1].style.gridArea = 'grid-unit1';
-//   // gridContainer.childNodes[3].style.gridArea = 'grid-unit1';
-//   // gridContainer.childNodes[4].style.gridArea = 'grid-unit1';
-
-//   gridContainer.style.gridTemplateColumns = `repeat(3, 1fr)`;
-//   gridContainer.style.gridTemplateRows = `repeat(3, 1fr)`;
-//   gridContainer.style.gridTemplateAreas = gridTemplateAreaString;
-
-//   // ******
-
-//   // var gridContainer = document.getElementById('grid-container');
-//   // gridContainer.innerHTML = '';
-
-//   // for (var i = 0; i < numberOfGridUnits; i++) {
-//   //   var gridUnit = document.createElement('div');
-//   //   gridUnit.classList.add('grid-unit');
-//   //   gridUnit.setAttribute('id', 'grid-unit' + i);
-//   //   gridContainer.appendChild(gridUnit);
-
-//   //   if (i < bigSquares) {
-//   //     gridUnit.style.gridArea = 'grid-unit' + (i + 1);
-//   //   }
-//   // }
-
-//   // gridContainer.style.gridTemplateColumns = `repeat(10, 1fr)`;
-//   // gridContainer.style.gridTemplateRows = `repeat(10, 1fr)`;
-//   // gridContainer.style.gridTemplateAreas = gridTemplateAreaString;
-// }
-
 function renderGrid(dimensions) {
   var gridContainer = document.getElementById('grid-container');
   gridContainer.innerText = '';
@@ -200,21 +107,22 @@ function renderGrid(dimensions) {
   gridContainer.style.gridTemplateAreas = gridTemplateAreasString;
 }
 
-
-
 function setupButtonsAndEventListeners() {
+  // add event listener to 'change grid size' button: prompt user for grid dimensions on click
+  // user input must be between 10 and 30
   var changeGridSizeButton = document.getElementById('change-grid-size-button');
   changeGridSizeButton.addEventListener('click', function () {
     var dimensions = window.prompt('Changing grid size will reset the grid.\nEnter a number between 10 and 30: ');
-    if (dimensions >= 10 && dimensions <= 30) {
+    if (dimensions >= 10 && dimension <= 30) {
       renderGrid(Math.round(dimensions));
-    } else if (dimensions === null) {
+    } else if (dimensions === '') {
       return;
     } else {
       window.prompt('You must enter a number between 10 and 30: ');
     }
   });
 
+  // add event listener to 'reset' button: reset all gridUnit colours on click
   var resetButton = document.getElementById('reset-button');
   resetButton.addEventListener('click', function () {
     var gridUnits = Array.from(document.querySelectorAll('.grid-unit'));
@@ -222,14 +130,15 @@ function setupButtonsAndEventListeners() {
       gridUnit.style.background = 'rgb(250, 194, 194)';
     });
   });
-}
 
-var gridContainer = document.getElementById('grid-container');
-gridContainer.addEventListener('mouseover', function (event) {
-  if (event.target.className === 'grid-unit') {
-    event.target.style.background = randomColourGenerator();
-  }
-});
+  // add event listener to gridContainer: change gridUnit colour on mouseover
+  var gridContainer = document.getElementById('grid-container');
+  gridContainer.addEventListener('mouseover', function (event) {
+    if (event.target.className === 'grid-unit') {
+      event.target.style.background = randomColourGenerator();
+    }
+  });
+}
 
 function initialise() {
   setupButtonsAndEventListeners();
