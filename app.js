@@ -5,14 +5,16 @@ function randomColourGenerator() {
 }
 
 function renderGrid(dimensions) {
+  // Setup gridContainer's grid template with (dimensions * dimensions) units
   var gridContainer = document.getElementById('grid-container');
   gridContainer.innerText = '';
-
   gridContainer.style.gridTemplateColumns = `repeat(${dimensions}, 1fr)`;
   gridContainer.style.gridTemplateRows = `repeat(${dimensions}, 1fr)`;
 
+
+  // Generate the entire string including info about the shape
+  // and which square each gridUnit belongs to
   var gridTemplateAreasArrayUnformatted = [];
-  var gridTemplateAreasArrayFormatted = [];
 
   for (var i = 0; i < dimensions * dimensions; i++) {
     var gridUnit = document.createElement('div');
@@ -22,6 +24,7 @@ function renderGrid(dimensions) {
     gridContainer.appendChild(gridUnit);
     gridTemplateAreasArrayUnformatted.push('.');
   }
+
   var usedGridUnits = [];
   // loop through all the gridUnits and determine whether each one is a specialSquare or not
   // if yes, decide which special square, set the gridArea, delete the other squares that would fall into its area
@@ -38,32 +41,36 @@ function renderGrid(dimensions) {
           if (i + 1 < dimensions * dimensions && i + dimensions < dimensions * dimensions && i + dimensions + 1 < dimensions * dimensions) {
             // only proceed if required gridUnits does not go over to next line
             if ((i + 1) % dimensions != 0) {
-              gridContainer.childNodes[i].setAttribute('shape', 'twoByTwoShape');
-              gridContainer.childNodes[i].style.gridArea = 'specialSquare' + i;
-              gridTemplateAreasArrayUnformatted[i] = 'specialSquare' + i;
-              gridTemplateAreasArrayUnformatted[i + 1] = 'specialSquare' + i;
-              gridTemplateAreasArrayUnformatted[i + dimensions] = 'specialSquare' + i;
-              gridTemplateAreasArrayUnformatted[i + dimensions + 1] = 'specialSquare' + i;
-              usedGridUnits.push(i + 1);
-              usedGridUnits.push(i + dimensions);
-              usedGridUnits.push(i + dimensions + 1);
+                gridContainer.childNodes[i].setAttribute('shape', 'twoByTwoShape');
+                gridContainer.childNodes[i].style.gridArea = 'specialSquare' + i;
+                gridTemplateAreasArrayUnformatted[i] = 'specialSquare' + i;
+                gridTemplateAreasArrayUnformatted[i + 1] = 'specialSquare' + i;
+                gridTemplateAreasArrayUnformatted[i + dimensions] = 'specialSquare' + i;
+                gridTemplateAreasArrayUnformatted[i + dimensions + 1] = 'specialSquare' + i;
+                usedGridUnits.push(i + 1);
+                usedGridUnits.push(i + dimensions);
+                usedGridUnits.push(i + dimensions + 1);
+              }
             }
           }
-        }
-      } else if (decideSpecialSquareType < 0.68) {
+        } else if (decideSpecialSquareType < 0.68) {
+        // only proceed if required gridUnits have not been used yet
         if (usedGridUnits.includes(i) === false && usedGridUnits.includes(i + dimensions) === false) {
+          // only proceed if required gridUnits exist
            if (i + dimensions < dimensions * dimensions) {
               if ((i + 1) % dimensions != 0) {
-              gridContainer.childNodes[i].setAttribute('shape', 'oneByTwoShape');
-              gridContainer.childNodes[i].style.gridArea = 'specialSquare' + i;
-              gridTemplateAreasArrayUnformatted[i] = 'specialSquare' + i;
-              gridTemplateAreasArrayUnformatted[i + dimensions] = 'specialSquare' + i;
-              usedGridUnits.push(i + dimensions);
+                gridContainer.childNodes[i].setAttribute('shape', 'oneByTwoShape');
+                gridContainer.childNodes[i].style.gridArea = 'specialSquare' + i;
+                gridTemplateAreasArrayUnformatted[i] = 'specialSquare' + i;
+                gridTemplateAreasArrayUnformatted[i + dimensions] = 'specialSquare' + i;
+                usedGridUnits.push(i + dimensions);
+              }
             }
           }
-        }
-      } else if (decideSpecialSquareType < 1) {
+        } else if (decideSpecialSquareType < 1) {
+        // only proceed if required gridUnits have not been used yet
         if (usedGridUnits.includes(i) === false && usedGridUnits.includes(i + 1) === false) {
+          // only proceed if required gridUnits exist
           if (i + 1 < dimensions * dimensions) {
              if ((i + 1) % dimensions != 0) {
               gridContainer.childNodes[i].setAttribute('shape', 'twoByOneShape');
@@ -71,8 +78,8 @@ function renderGrid(dimensions) {
               gridTemplateAreasArrayUnformatted[i] = 'specialSquare' + i;
               gridTemplateAreasArrayUnformatted[i + 1] = 'specialSquare' + i;
               usedGridUnits.push(i + 1);
-           }
-         }
+            }
+          }
         }
       }
     } 
@@ -83,19 +90,28 @@ function renderGrid(dimensions) {
     getRidOf.remove();
   }
 
+  var gridTemplateAreasArrayFormatted = [];
   var gridTemplateAreasRowArray = [];
+
   do {
+    // Extract the first `dimensions` of elements from gridTemplateAreasArrayUnformatted
+    // and push into gridTemplateAreasRowArray.
     for (var i = 0; i < dimensions; i++) {
       gridTemplateAreasRowArray.push(gridTemplateAreasArrayUnformatted[i]);
     }
+
+    // Join gridTemplateAreasRowArray into one string, gridTemplateAreasRowArrayToString,
+    // and push into gridTemplateAreasArrayFormatted
     var gridTemplateAreasRowArrayToString = gridTemplateAreasRowArray.join(' ')
     gridTemplateAreasArrayFormatted.push(gridTemplateAreasRowArrayToString);
+
+    // Reset gridTemplateAreasRowArray for the next iteration
     gridTemplateAreasRowArray = [];
 
+    // Remove the elements that had just been pushed into 
+    // gridTemplateAreasArrayFormatted from gridTemplateAreasArrayUnformatted
+    gridTemplateAreasArrayUnformatted.splice(0, dimensions)
 
-    for (var j = 0; j < dimensions; j++) {
-      gridTemplateAreasArrayUnformatted.shift();
-    }
   } while (gridTemplateAreasArrayUnformatted.length > 0);
 
   var gridTemplateAreasString = ''
