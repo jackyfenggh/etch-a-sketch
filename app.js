@@ -1,88 +1,195 @@
+// Misc helper functions
+
 function randomColourGenerator() {
   var colourPalette = ['black', 'blue', 'brown', 'green', 'gray', 'yellow', 'orange', 'red', 'purple', 'white', 'turquoise'];
   var randomArrayIndex = Math.floor(Math.random() * colourPalette.length);
   return colourPalette[randomArrayIndex];
 }
 
+function convertIndexToRow(index, dimensions) {
+  var row = Math.floor(index / dimensions);
+  return row;
+}
+
+function convertIndexToColumn(index, dimensions) {
+  var column = index % dimensions;
+  return column;
+}
+
+// Functions to determine whether a special square 
+// should be setup and which one
+
+function isSpecialSquare() {
+  return Math.random() > 0.80;
+}
+
+function getSpecialSquareType() {
+  var randomValue = Math.random();
+
+  if (randomValue < 0.25) {
+    return 'twoByTwoShape';
+  }
+
+  if (randomValue < 0.68) {
+    return 'oneByTwoShape';
+  }
+
+  if (randomValue <= 1) {
+    return 'twoByOneShape';
+  }
+}
+
+// Functions to see whether the required special square
+// grid units exist, are unused and do not spill over
+// to the next line
+
+function requiredGridUnitsAvailable(specialSquareType, mainGridUnitIndex, dimensions) {
+  var mainGridUnitIndex = mainGridUnitIndex;
+  var rightGridUnitIndex = mainGridUnitIndex + 1;
+  var bottomLeftGridUnitIndex = mainGridUnitIndex + dimensions;
+  var bottomRightGridUnitIndex = mainGridUnitIndex + dimensions + 1;
+  var maxGridUnitIndex = dimensions * dimensions;
+
+  function gridUnitAvailable(gridUnitIndex) {
+    var gridTemplateAreaRow = convertIndexToRow(gridUnitIndex, dimensions);
+    var gridTemplateAreaColumn = convertIndexToColumn(gridUnitIndex, dimensions);
+    var gridUnit = `[${gridTemplateAreaRow}][${gridTemplateAreaColumn}]`;
+
+    return (!usedGridUnits.includes(gridUnit)       // grid unit has not been used for another special square
+      && gridUnitIndex < maxGridUnitIndex           // grid unit exists within the grid container
+      && rightGridUnitIndex % dimensions !== 0);    // right grid unit does not spill over
+  }
+
+  // Check that the required grid units have not
+  // been used already
+  if (specialSquareType === 'twoByTwoShape') {
+    return gridUnitAvailable(mainGridUnitIndex)
+      && gridUnitAvailable(rightGridUnitIndex)
+      && gridUnitAvailable(bottomLeftGridUnitIndex)
+      && gridUnitAvailable(bottomRightGridUnitIndex);
+  }
+
+  if (specialSquareType === 'oneByTwoShape') {
+    return gridUnitAvailable(mainGridUnitIndex)
+      && gridUnitAvailable(rightGridUnitIndex);
+  }
+
+  if (specialSquareType === 'twoByOneShape') {
+    return gridUnitAvailable(mainGridUnitIndex)
+      && gridUnitAvailable(bottomLeftGridUnitIndex);
+  }
+}
+
+// Functions to setup special square
+
+function setupMainGridUnit(type, mainGridUnitIndex) {
+  var gridTemplateAreaRow = convertIndexToRow(mainGridUnitIndex, dimensions);
+  var gridTemplateAreaColumn = convertIndexToColumn(mainGridUnitIndex, dimensions);
+
+  gridContainer.childNodes[mainGridUnitIndex].setAttribute('shape', type);
+  gridContainer.childNodes[mainGridUnitIndex].style.gridArea = 'specialSquare' + mainGridUnitIndex;
+
+  gridTemplateAreasArray[gridTemplateAreaRow][gridTemplateAreaColumn] = 'specialSquare' + mainGridUnitIndex;
+}
+
+function setupRightGridUnit(mainGridUnitIndex) {
+  var rightGridUnitIndex = mainGridUnitIndex + 1;
+  var gridTemplateAreaRow = convertIndexToRow(rightGridUnitIndex, dimensions);
+  var gridTemplateAreaColumn = convertIndexToColumn(rightGridUnitIndex, dimensions);
+
+  usedGridUnits.push(`[${gridTemplateAreaRow}][${gridTemplateAreaColumn}]`);
+
+  gridTemplateAreasArray[gridTemplateAreaRow][gridTemplateAreaColumn] = 'specialSquare' + mainGridUnitIndex;
+}
+
+function setupBottomLeftGridUnit(mainGridUnitIndex) {
+  var bottomLeftGridUnitIndex = mainGridUnitIndex + dimensions;
+  var gridTemplateAreaRow = convertIndexToRow(bottomLeftGridUnitIndex, dimensions);
+  var gridTemplateAreaColumn = convertIndexToColumn(bottomLeftGridUnitIndex, dimensions);
+
+  usedGridUnits.push(`[${gridTemplateAreaRow}][${gridTemplateAreaColumn}]`);
+
+  gridTemplateAreasArray[gridTemplateAreaRow][gridTemplateAreaColumn] = 'specialSquare' + mainGridUnitIndex;
+}
+
+function setupBottomRightGridUnit(mainGridUnitIndex) {
+  var bottomRightGridUnitIndex = mainGridUnitIndex + dimensions + 1;
+  var gridTemplateAreaRow = convertIndexToRow(bottomRightGridUnitIndex, dimensions);
+  var gridTemplateAreaColumn = convertIndexToColumn(bottomRightGridUnitIndex, dimensions);
+
+  usedGridUnits.push(`[${gridTemplateAreaRow}][${gridTemplateAreaColumn}]`);
+
+  gridTemplateAreasArray[gridTemplateAreaRow][gridTemplateAreaColumn] = 'specialSquare' + mainGridUnitIndex;
+}
+
+function setupSpecialSquare(type, mainGridUnitIndex) {
+  if (type === 'twoByTwoShape') {
+    setupMainGridUnit(type, mainGridUnitIndex)
+    setupRightGridUnit(mainGridUnitIndex);
+    setupBottomLeftGridUnit(mainGridUnitIndex);
+    setupBottomRightGridUnit(mainGridUnitIndex);
+    return;
+  }
+
+  if (type === 'oneByTwoShape') {
+    setupMainGridUnit(type, mainGridUnitIndex)
+    setupRightGridUnit(mainGridUnitIndex);
+    return;
+  }
+
+  if (type === 'twoByOneShape') {
+    setupMainGridUnit(type, mainGridUnitIndex)
+    setupBottomLeftGridUnit(mainGridUnitIndex);
+    return;
+  }
+}
+
+var usedGridUnits = [];
+var gridContainer = document.getElementById('grid-container');
+var gridTemplateAreasArray = [];
+
 function renderGrid(dimensions) {
   // Setup gridContainer's grid template with (dimensions * dimensions) units
-  var gridContainer = document.getElementById('grid-container');
   gridContainer.innerText = '';
   gridContainer.style.gridTemplateColumns = `repeat(${dimensions}, 1fr)`;
   gridContainer.style.gridTemplateRows = `repeat(${dimensions}, 1fr)`;
 
-
   // Generate the entire string including info about the shape
-  // and which square each gridUnit belongs to
-  var gridTemplateAreasArrayUnformatted = [];
+  // and which square each gridUnit belongs to.
+  // Use a double for loop to populate an array with arrays of strings.
 
-  for (var i = 0; i < dimensions * dimensions; i++) {
-    var gridUnit = document.createElement('div');
-    gridUnit.classList.add('grid-unit');
-    gridUnit.setAttribute('id', 'grid-unit' + i);
-    gridUnit.setAttribute('shape', 'oneByOneShape');
-    gridContainer.appendChild(gridUnit);
-    gridTemplateAreasArrayUnformatted.push('.');
+  // Generate an array of arrays 
+
+  for (var i = 0; i < dimensions; i++) {
+    gridTemplateAreasArray.push([]);
+    for (var j = 0; j < dimensions; j++) {
+      // Setup html/css properties.
+      var gridUnit = document.createElement('div');
+      gridUnit.classList.add('grid-unit');
+      gridUnit.setAttribute('id', `grid-unit[${i}][${j}]`);
+      gridUnit.setAttribute('shape', 'oneByOneShape');
+      gridContainer.appendChild(gridUnit);
+
+      gridTemplateAreasArray[i].push('.');
+    }
   }
 
-  var usedGridUnits = [];
-  // loop through all the gridUnits and determine whether each one is a specialSquare or not
-  // if yes, decide which special square, set the gridArea, delete the other squares that would fall into its area
-  // then add to array string.
+  // Loop through all gridUnits
   for (var i = 0; i < gridContainer.childNodes.length; i++) {
-    var decideIfSpecialSquare = Math.random();
-    if (decideIfSpecialSquare > 0.80) {
-      var decideSpecialSquareType = Math.random();
-      // if (decideSpecialSquareType < 0.10) {
-      if (decideSpecialSquareType < 0.25) {
-        // only proceed if required gridUnits have not been used yet
-        if (usedGridUnits.includes(i) === false && usedGridUnits.includes(i + 1) === false && usedGridUnits.includes(i + dimensions) === false && usedGridUnits.includes(i + dimensions + 1) === false) {
-          // only proceed if required gridUnits exist
-          if (i + 1 < dimensions * dimensions && i + dimensions < dimensions * dimensions && i + dimensions + 1 < dimensions * dimensions) {
-            // only proceed if required gridUnits does not go over to next line
-            if ((i + 1) % dimensions != 0) {
-                gridContainer.childNodes[i].setAttribute('shape', 'twoByTwoShape');
-                gridContainer.childNodes[i].style.gridArea = 'specialSquare' + i;
-                gridTemplateAreasArrayUnformatted[i] = 'specialSquare' + i;
-                gridTemplateAreasArrayUnformatted[i + 1] = 'specialSquare' + i;
-                gridTemplateAreasArrayUnformatted[i + dimensions] = 'specialSquare' + i;
-                gridTemplateAreasArrayUnformatted[i + dimensions + 1] = 'specialSquare' + i;
-                usedGridUnits.push(i + 1);
-                usedGridUnits.push(i + dimensions);
-                usedGridUnits.push(i + dimensions + 1);
-              }
-            }
-          }
-        } else if (decideSpecialSquareType < 0.68) {
-        // only proceed if required gridUnits have not been used yet
-        if (usedGridUnits.includes(i) === false && usedGridUnits.includes(i + dimensions) === false) {
-          // only proceed if required gridUnits exist
-           if (i + dimensions < dimensions * dimensions) {
-              if ((i + 1) % dimensions != 0) {
-                gridContainer.childNodes[i].setAttribute('shape', 'oneByTwoShape');
-                gridContainer.childNodes[i].style.gridArea = 'specialSquare' + i;
-                gridTemplateAreasArrayUnformatted[i] = 'specialSquare' + i;
-                gridTemplateAreasArrayUnformatted[i + dimensions] = 'specialSquare' + i;
-                usedGridUnits.push(i + dimensions);
-              }
-            }
-          }
-        } else if (decideSpecialSquareType < 1) {
-        // only proceed if required gridUnits have not been used yet
-        if (usedGridUnits.includes(i) === false && usedGridUnits.includes(i + 1) === false) {
-          // only proceed if required gridUnits exist
-          if (i + 1 < dimensions * dimensions) {
-             if ((i + 1) % dimensions != 0) {
-              gridContainer.childNodes[i].setAttribute('shape', 'twoByOneShape');
-              gridContainer.childNodes[i].style.gridArea = 'specialSquare' + i;
-              gridTemplateAreasArrayUnformatted[i] = 'specialSquare' + i;
-              gridTemplateAreasArrayUnformatted[i + 1] = 'specialSquare' + i;
-              usedGridUnits.push(i + 1);
-            }
-          }
-        }
-      }
-    } 
+    // Determine if special square
+    if (!isSpecialSquare()) {
+      continue;
+    }
+
+    // Determine type of special square and whether
+    // the required grid units are available
+    var specialSquareType = getSpecialSquareType();
+    var gridUnitsAvailable = requiredGridUnitsAvailable(specialSquareType, i, dimensions);
+
+    // Setup special square
+    if (gridUnitsAvailable) {
+      setupSpecialSquare(specialSquareType, i);
+    }
   }
 
   for (var i = 0; i < usedGridUnits.length; i++) {
@@ -90,46 +197,30 @@ function renderGrid(dimensions) {
     getRidOf.remove();
   }
 
-  var gridTemplateAreasArrayFormatted = [];
-  var gridTemplateAreasRowArray = [];
-
-  do {
-    // Extract the first `dimensions` of elements from gridTemplateAreasArrayUnformatted
-    // and push into gridTemplateAreasRowArray.
-    for (var i = 0; i < dimensions; i++) {
-      gridTemplateAreasRowArray.push(gridTemplateAreasArrayUnformatted[i]);
-    }
-
-    // Join gridTemplateAreasRowArray into one string, gridTemplateAreasRowArrayToString,
-    // and push into gridTemplateAreasArrayFormatted
-    var gridTemplateAreasRowArrayToString = gridTemplateAreasRowArray.join(' ')
-    gridTemplateAreasArrayFormatted.push(gridTemplateAreasRowArrayToString);
-
-    // Reset gridTemplateAreasRowArray for the next iteration
-    gridTemplateAreasRowArray = [];
-
-    // Remove the elements that had just been pushed into 
-    // gridTemplateAreasArrayFormatted from gridTemplateAreasArrayUnformatted
-    gridTemplateAreasArrayUnformatted.splice(0, dimensions)
-
-  } while (gridTemplateAreasArrayUnformatted.length > 0);
-
   var gridTemplateAreasString = ''
 
-  for (var i = 0; i < gridTemplateAreasArrayFormatted.length; i++) {
-    gridTemplateAreasString += `"${gridTemplateAreasArrayFormatted[i]}" `;
+  for (var i = 0; i < gridTemplateAreasArray.length; i++) {
+    gridTemplateAreasString += `"${gridTemplateAreasArray[i]}" `;
   }
 
+  gridTemplateAreasString = gridTemplateAreasString.replaceAll(',', ' ');
   gridContainer.style.gridTemplateAreas = gridTemplateAreasString;
+
+  // since no longer declared when function runs, need to reset otherwise running
+  // renderGrid again means usedGridUnits will all be out of whack
+  usedGridUnits = [];
+  gridTemplateAreasArray = []
 }
+
+var dimensions = 10;
 
 function setupButtonsAndEventListeners() {
   // add event listener to 'change grid size' button: prompt user for grid dimensions on click
   // user input must be between 10 and 30
   var changeGridSizeButton = document.getElementById('change-grid-size-button');
   changeGridSizeButton.addEventListener('click', function () {
-    var dimensions = window.prompt('Changing grid size will reset the grid.\nEnter a number between 10 and 30: ');
-    if (dimensions >= 10 && dimension <= 30) {
+    dimensions = parseInt(window.prompt('Changing grid size will reset the grid.\nEnter a number between 10 and 30: '));
+    if (dimensions >= 10 && dimensions <= 30) {
       renderGrid(Math.round(dimensions));
     } else if (dimensions === '') {
       return;
@@ -162,29 +253,3 @@ function initialise() {
 }
 
 initialise();
-
-// // code for grid-template-areas for later:
-//   // create an array with the values to be joined
-//   var gridTemplateAreasArrayUnformatted = [];
-//   var gridTemplateAreasString = '';
-//   // var pattern = 'squaresAndRectangles';
-//   // for loop to create each row/string for grid-template-areas value
-//   for (var i = 0; i < dimensions; i++) {
-//     var gridTemplateAreasArrayUnformattedItem = '';
-//     // for loop to populate the length of each row/string according to dimensions input by user
-//     for (var j = 0; j < dimensions; j++) {
-//         gridTemplateAreasArrayUnformattedItem += 'grid-unit ';
-//     }
-//     gridTemplateAreasArrayUnformatted.push(gridTemplateAreasArrayUnformattedItem);
-//   }
-//   // wrap each value from the array above in "" (quotes) and join with a space in between each and wrap the final value in `` (backtick characters)
-//   var gridTemplateAreasStringGenerator = function() {
-//     for (var i = 0; i < gridTemplateAreasArrayUnformatted.length; i++) {
-//       gridTemplateAreasString += `"${gridTemplateAreasArrayUnformatted[i]}" `;
-//     }
-//     gridTemplateAreasString = gridTemplateAreasString.trim();
-//     gridContainer.style.gridTemplateAreas = gridTemplateAreasString;
-//   }();
-//   // the code block directly above replaces the need to use .map() and .join():
-//   // gridTemplateAreasArrayUnformatted = gridTemplateAreasArrayUnformatted.map(i => `"${i}"`);
-//   // gridContainer.style.gridTemplateAreas = gridTemplateAreasArrayUnformatted.join(' ');

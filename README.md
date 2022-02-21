@@ -58,3 +58,9 @@ If square 1 was decided to be a 2 by 2 special square, then remove squares 2, 4 
 However, since the function makes use of `childNodes.length`, by removing the squares before the rest of the childNodes is iterated over, `childNodes.length` changes and things go out of order. In the above example, `childNodes.length[1]` should be square 2, but since it's removed, it's now square 3. Then all the other code that relies on i being equal to the original number of squares no longer works.
 
 To fix this, I simply wrote the code so that it deleted the redundant squares after childNodes had been iterated from start to finish, when childNodes.length and the order of it all was no longer important.
+
+5. Revisited this project to refactor the code. It took a while to understand what was going on in the code and I was the one that wrote it. I broke the renderGrid function into smaller functions, added explanations throughout the code and grouped similar functions together. I removed the need for a lot of the string processing required in the old renderGrid function by setting up gridTemplateAreasArray as a nested array of strings rather than one single string.
+
+I will probably revisit this again in a few months and do more refactoring, but for now I'm pretty happy with where it is and I'd rather move on to my next project to pick up learning momentum again.
+
+P.S. I only realised now that the README.md file gets automatically displayed on the main Git Hub page and should really be an explanation of the project rather than my ramblings. Oh well.
